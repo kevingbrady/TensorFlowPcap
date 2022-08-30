@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+# Types for Non normalized data
 columns = {
     'No': tf.int32,
     'src_ip': tf.int64,
@@ -82,6 +83,7 @@ columns = {
     'Target': tf.int32
 }
 
+# Types for normalized data
 columns_normalized = {
     "No": tf.int32,
     "src_ip": tf.float32,

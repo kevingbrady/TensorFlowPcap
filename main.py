@@ -6,10 +6,13 @@ import numpy as np
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import BatchNormalization, Normalization, Dense, Input, Dropout
+import json
 import hashlib
 import data_columns
 
+# Import Column Types from Data Columns file
 columns = data_columns.columns_normalized
+
 
 def print_run_time(elapsed_time):
     hours, rem = divmod(elapsed_time, 3600)
@@ -17,6 +20,7 @@ def print_run_time(elapsed_time):
     return "{:0>2} hrs {:0>2} min {:05.2f} s".format(int(hours), int(minutes), int(seconds))
 
 
+# Split Dataset into Train, Test, and Validation Sets. Default Split is 80/10/10
 def get_dataset_partitions_tf(ds, ds_size, split_size, train_split=0.8, val_split=0.1, test_split=0.1):
     assert (train_split + test_split + val_split) == 1
 
@@ -30,7 +34,8 @@ def get_dataset_partitions_tf(ds, ds_size, split_size, train_split=0.8, val_spli
     return train_ds, val_ds, test_ds
 
 
-def normalize_dataset_l2(csv_file):
+# Normalize Entire Dataset in Batches using L2 Normalization
+def _normalize_dataset_l2(csv_file):
 
     csv_data = pd.read_csv(csv_file, chunksize=112000, iterator=True)
     i = 0
@@ -43,7 +48,8 @@ def normalize_dataset_l2(csv_file):
         i += 1
 
 
-def normalize_dataset_zscore(csv_file):
+# Normalize Entire Dataset in Batches Using ZScore Normalization
+def _normalize_dataset_zscore(csv_file):
 
     csv_data = pd.read_csv(csv_file, chunksize=112000, iterator=True)
     i = 0
@@ -56,6 +62,8 @@ def normalize_dataset_zscore(csv_file):
         i += 1
 
 
+# Normalize Dataset using defined method (l2 or zscore). If the Normalized Data file already exists and has not been
+# updated return the file without performing any unnecessary work
 def check_data(csv_file, method):
 
     assert method == 'l2' or method == 'zscore'
@@ -63,19 +71,23 @@ def check_data(csv_file, method):
 
     if os.path.exists(file):
 
-        l2_hash = 'bd4240ad21ba6510a9ccabf084389a12'
-        zscore_hash = '24688d0237eef73c302c39cbed7010cb'
-        file_hash = hashlib.md5(open(file,'rb').read()).hexdigest()
+        with open("data_file_hashes.json") as data_file:
 
-        if file_hash == (l2_hash if method == 'l2' else zscore_hash):
-            print(file + " up to date, continuing ...")
-            return file
+            data_file_hashes = json.load(data_file)
+            file_hash = hashlib.md5(open(file, 'rb').read()).hexdigest()
+
+            if file_hash == data_file_hashes[method]:
+                print(file + " up to date, continuing ...")
+                return file
+
+        data_file_hashes[method] = file_hash
+        json.dump(data_file_hashes, data_file)
 
     print("No normalized data file found, creating new file ...")
     if method == 'l2':
-        normalize_dataset_l2(csv_file)
+        _normalize_dataset_l2(csv_file)
     if method == 'zscore':
-        normalize_dataset_zscore(csv_file)
+        _normalize_dataset_zscore(csv_file)
 
     return file
 
@@ -86,14 +98,17 @@ if __name__ == '__main__':
     normalized_csv_file = check_data(csv_file, 'zscore')
 
     batch_size = 80            # TRAINING + TEST + VALIDATION (80 , 10, 10)
-    column_names = list(columns.keys())
+                               # Training Batch Size / (Percentage of Data Allocated for Training)
 
+    column_names = list(columns.keys())
     dataset_size = sum(1 for row in open(normalized_csv_file))
     print('Dataset Size: ', dataset_size)
     print('Num Features: ', len(columns))
 
+    # Use Batch Size to Determine the Size of Each Batch of Data, with the last batch consisting of the remainder of data
     split_size, remainder = divmod(dataset_size, batch_size)
 
+    # Make Dataset from Normalized Data File and Shuffle Entries
     dataset = tf.data.experimental.make_csv_dataset(
         normalized_csv_file,
         batch_size=split_size,
@@ -107,13 +122,15 @@ if __name__ == '__main__':
         num_epochs=1
     )
 
+    # Split Data into Train, Test, Validation Sets
     train, validation, test = get_dataset_partitions_tf(dataset, dataset_size, split_size)
 
+    # Prefetch and Cache Data to help speed up training and evaluation
     train = train.cache().prefetch(tf.data.AUTOTUNE)
     validation = validation.cache().prefetch(tf.data.AUTOTUNE)
     test = test.cache().prefetch(tf.data.AUTOTUNE)
 
-
+    # Build Model by setting up layers, starting with input layer to capture the features in the dataset
     inputs = {}
     feature_columns = []
 
@@ -136,23 +153,22 @@ if __name__ == '__main__':
         Dense(1, activation='sigmoid')   # Output
     ])(features)
 
+    # Compile Model with Adam Optimizer and Binary Crossentropy loss function
     model = keras.Model(inputs=inputs, outputs=x)
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     loss = tf.keras.losses.BinaryCrossentropy()
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'], jit_compile=True)
 
+    # Train model using multiple epochs, with the validation set being evaluated after each epoch to check for overfitting
     start = time.time()
     model.fit(
         train,
-        epochs=50,
+        epochs=100,
         batch_size=(batch_size / 0.8) * 2,
         validation_data=validation,
     )
 
-    #test_loss, test_accuracy = model.evaluate(test, batch_size=split_size, use_multiprocessing=True, verbose=1)
-    #val_loss, val_accuracy = model.evaluate(validation, batch_size=split_size, use_multiprocessing=True, verbose=1)
-
-
+    # Evaluate model using test data that had been held out
     test_loss, test_accuracy = model.evaluate(test, batch_size=(batch_size / 0.8) * 2, verbose=0)
     end = time.time()
 

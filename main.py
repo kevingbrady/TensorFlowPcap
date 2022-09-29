@@ -19,7 +19,7 @@ if __name__ == '__main__':
     print('Num Features: ', manager.num_features)
 
     # Check if new regularized data file needs to be created, otherwise use existing one
-    normalized_csv_file = manager.get_normalized_data_file('l2')
+    normalized_csv_file = manager.get_normalized_data_file('zscore')
 
     # Make Dataset from Normalized Data File and Shuffle Entries
     dataset = tf.data.experimental.make_csv_dataset(

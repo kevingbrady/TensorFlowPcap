@@ -7,7 +7,6 @@ from .metadata.data_columns import columns
 class CsvReader:
 
     CHUNKSIZE = 1000000
-    BYTE_RANGE = 1e9
 
     def __init__(self, filename):
 
@@ -25,7 +24,6 @@ class CsvReader:
 
         return pd.read_csv(self.filename,
                            chunksize=self.CHUNKSIZE,
-                           dtype=columns.values(),
                            iterator=True)
 
     def read_csv_gpu(self):

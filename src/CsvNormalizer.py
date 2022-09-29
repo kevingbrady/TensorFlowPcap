@@ -4,6 +4,7 @@ from .utils import print_run_time
 from .CsvReader import CsvReader
 from .metadata.data_columns import columns_normalized
 
+
 class CsvNormalizer(CsvReader):
 
     normalized_filename = ''
@@ -20,62 +21,18 @@ class CsvNormalizer(CsvReader):
 
         if self.gpu_available > 0:
             data_generator = self.read_csv_gpu()
-            if method == 'l2':
-                self._normalize_dataset_l2_gpu(data_generator)
-            else:
-                self._normalize_dataset_zscore_gpu(data_generator)
+            self._normalize_dataset(data_generator, method, 'GPU')
         else:
             data_generator = self.read_csv_cpu()
-            if method == 'l2':
-                self._normalize_dataset_l2(data_generator)
-            else:
-                self._normalize_dataset_zscore(data_generator)
+            self._normalize_dataset(data_generator, method, 'CPU')
 
-    def write_chunk(self, chunk, header, mode):
+    def _write_chunk(self, chunk, header, mode):
 
         with open(self.normalized_filename, mode) as outfile:
             chunk.to_csv(outfile, header=header, index=False, columns=self.columns)
 
-    # Normalize Entire Dataset in Batches using L2 Normalization
-    def _normalize_dataset_l2(self, data_generator):
-
-        i = 0
-        s = time.time()
-
-        for chunk in data_generator:
-            header = (True if i == 0 else False)
-            mode = ('w' if i == 0 else 'a')
-
-            chunk = chunk.apply(lambda x: (x - x.min()) / (x.max() - x.min()) if x.name not in ('No', 'Target') else x,
-                                axis=0)
-           # chunk.to_csv(self.normalized_filename, header=header, mode=mode, index=False, na_rep='0.0',
-            #             columns=data_columns.columns.keys())
-            self.write_chunk(chunk, header, mode)
-            i += 1
-        e = time.time()
-        print("CPU Data Normalization Completed In: " + print_run_time(e - s))
-
-    # Normalize Entire Dataset in Batches Using ZScore Normalization
-    def _normalize_dataset_zscore(self, data_generator):
-
-        i = 0
-        s = time.time()
-
-        for chunk in data_generator:
-            header = (True if i == 0 else False)
-            mode = ('w' if i == 0 else 'a')
-
-            chunk = chunk.apply(lambda x: (x - x.mean()) / x.std() if x.name not in ('No', 'Target') else x, axis=0)
-            #chunk.to_csv(self.normalized_filename, header=header, mode=mode, index=False, na_rep='0.0',
-            #             columns=data_columns.columns.keys())
-            self.write_chunk(chunk, header, mode)
-            i += 1
-
-        e = time.time()
-        print("CPU Data Normalization Completed In: " + print_run_time(e - s))
-
-    # Normalize Entire Dataset in Batches using L2 Normalization over GPU
-    def _normalize_dataset_l2_gpu(self, data_generator, ddof=1.0):
+    # Normalize Entire Dataset in Batches using L2 Normalization (CPU or GPU)
+    def _normalize_dataset(self, data_generator, method, proc):
 
         i = 0
         s = time.time()
@@ -86,40 +43,19 @@ class CsvNormalizer(CsvReader):
 
             for col in chunk:
                 if col not in ('No', 'Target'):
-                    # chunk[col] = (chunk[col] - chunk[col].min()) / (ddof - (chunk[col].max() - chunk[col].min()))
-                    chunk[col] = (chunk[col] - chunk[col].min()) / ((chunk[col].max() - chunk[col].min())) if (
-                                chunk[col].max() - chunk[col].min()) else 0.0
-                    # chunk[col] = 0 if (chunk[col].max() - chunk[col].min()) == 0 else (chunk[col] - chunk[col].min()) / ((chunk[col].max() - chunk[col].min()))
 
-            #with open(self.normalized_filename, mode) as outfile:
-            #    chunk.to_csv(outfile, header=header, index=False, columns=data_columns.columns.keys())
-            self.write_chunk(chunk, header, mode)
+                    chunk[col] = self.normalize(chunk[col], method)
+
+            self._write_chunk(chunk, header, mode)
             i += 1
 
         e = time.time()
-        print("GPU Data Normalization Completed In:  " + print_run_time(e - s))
+        print(proc + " Data Normalization Completed In: " + print_run_time(e - s))
 
-    # Normalize Entire Dataset in Batches Using ZScore Normalization over GPU
-    def _normalize_dataset_zscore_gpu(self, data_generator, ddof=1.0):
-
-        i = 0
-        s = time.time()
-
-        for chunk in data_generator:
-            header = (True if i == 0 else False)
-            mode = ('w' if i == 0 else 'a')
-
-            for col in chunk:
-                if col not in ('No', 'Target'):
-                    # chunk[col] = (chunk[col] - chunk[col].mean()) / (ddof - chunk[col].std())
-                    chunk[col] = (chunk[col] - chunk[col].mean()) / (chunk[col].std(ddof=0)) if chunk[col].std(
-                        ddof=0) else 0.0
-                    # chunk[col] = 0 if chunk[col].std() == 0 else (chunk[col] - chunk[col].mean()) / (chunk[col].std())
-
-            #with open(self.normalized_filename, mode) as outfile:
-            #    chunk.to_csv(outfile, header=header, index=False)
-            self.write_chunk(chunk, header, mode)
-            i += 1
-
-        e = time.time()
-        print("GPU Data Normalization Completed In:  " + print_run_time(e - s))
+    # Normalize using l2 or zscore
+    @staticmethod
+    def normalize(x, method):
+        if method == 'l2':
+            return (x - x.min()) / (x.max() - x.min()) if (x.max() - x.min()) else 0.0
+        elif method == 'zscore':
+            return (x - x.mean()) / x.std(ddof=0) if x.std(ddof=0) else 0.0

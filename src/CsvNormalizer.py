@@ -13,7 +13,7 @@ class CsvNormalizer(CsvReader):
     def __init__(self, file):
         super(CsvNormalizer, self).__init__(file)
 
-    def create_normalized_csvfile(self, method):
+    def create_normalized_csvfile(self, ignore_features, method):
 
         assert os.path.exists(self.filename)
         assert method == 'l2' or method == 'zscore'
@@ -22,13 +22,13 @@ class CsvNormalizer(CsvReader):
         if self.gpus_available > 0:
             data_generator = self.read_csv_gpu()
             self._normalize_dataset(data_generator=data_generator,
-                                    ignore_features=('No', 'Target'),
+                                    ignore_features=ignore_features,
                                     method=method,
                                     proc='GPU')
         else:
             data_generator = self.read_csv_cpu()
             self._normalize_dataset(data_generator=data_generator,
-                                    ignore_features=('No', 'Target'),
+                                    ignore_features=ignore_features,
                                     method=method,
                                     proc='CPU')
 

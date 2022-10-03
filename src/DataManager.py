@@ -36,7 +36,7 @@ class DataManager:
         csv_normalizer = CsvNormalizer(self.file)
 
         if csv_normalizer.gpus_available > 0:
-            manager.jit_compile = True
+            self.jit_compile = True
 
         with open("src/metadata/data_file_hashes.json", "r+") as data_file:
 

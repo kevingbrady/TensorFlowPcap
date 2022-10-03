@@ -12,6 +12,7 @@ class DataManager:
     num_features = len(columns)
     feature_names = list(columns.keys())
     features = {'data': columns, 'normalized': columns_normalized}
+    jit_compile = False
     split_size = 0
     remainder = 0
     batch_size = 0
@@ -32,6 +33,10 @@ class DataManager:
     def get_normalized_data_file(self, method):
 
         file = os.path.splitext(self.file)[0] + "_normalized_" + method + ".csv"
+        csv_normalizer = CsvNormalizer(self.file)
+
+        if csv_normalizer.gpus_available > 0:
+            manager.jit_compile = True
 
         with open("src/metadata/data_file_hashes.json", "r+") as data_file:
 
@@ -47,7 +52,6 @@ class DataManager:
 
             print("No normalized data file found, creating new file ...")
 
-            csv_normalizer = CsvNormalizer(self.file)
             csv_normalizer.create_normalized_csvfile(method)
 
             data_file.seek(0)

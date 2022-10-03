@@ -74,7 +74,7 @@ if __name__ == '__main__':
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     loss = tf.keras.losses.BinaryCrossentropy()
     metrics = ['accuracy', 'Precision', 'Recall'] #'AUC']
-    model.compile(optimizer=optimizer, loss=loss, metrics=metrics, jit_compile=True)
+    model.compile(optimizer=optimizer, loss=loss, metrics=metrics, jit_compile=manager.jit_compile)
 
     # Train model using multiple epochs, with the validation
     # set being evaluated after each epoch to check for overfitting

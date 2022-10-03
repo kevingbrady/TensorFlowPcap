@@ -57,6 +57,7 @@ class CsvReader:
 '''
 if __name__ == '__main__':
 
+    print(GPUs)
     csv_file = CsvReader('../preprocessedData.csv')
     data_generator = csv_file.read_file()
 

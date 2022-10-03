@@ -1,7 +1,12 @@
 import tensorflow as tf
-import cudf
 import pandas as pd
+import sys
 from .metadata.data_columns import columns
+
+GPUs = tf.config.list_physical_devices('GPU')
+
+if sys.platform.__contains__('linux') and len(GPUs) > 0:
+    import cudf
 
 
 class CsvReader:
@@ -11,11 +16,12 @@ class CsvReader:
     def __init__(self, filename):
 
         self.filename = filename
-        self.gpu_available = len(tf.config.list_physical_devices('GPU'))
+        self.gpus_available = len(GPUs)
+        self.use_cudf = (sys.platform.__contains__('linux') and self.gpus_available > 0)
 
     def read_file(self):
 
-        if self.gpu_available:
+        if self.gpus_available > 0 and self.use_cudf:
             return self.read_csv_gpu()
         else:
             return self.read_csv_cpu()
@@ -28,7 +34,7 @@ class CsvReader:
 
     def read_csv_gpu(self):
 
-        assert self.gpu_available > 0
+        assert self.gpus_available > 0
 
         offset = 0
         while True:
@@ -48,7 +54,7 @@ class CsvReader:
             except RuntimeError:
                 break
 
-
+'''
 if __name__ == '__main__':
 
     csv_file = CsvReader('../preprocessedData.csv')
@@ -57,3 +63,4 @@ if __name__ == '__main__':
     for chunk in data_generator:
         print(chunk['No'].values[-5:])
         print('\n\n')
+'''

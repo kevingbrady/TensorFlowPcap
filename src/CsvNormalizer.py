@@ -19,12 +19,18 @@ class CsvNormalizer(CsvReader):
         assert method == 'l2' or method == 'zscore'
         self.normalized_filename = os.path.splitext(self.filename)[0] + "_normalized_" + method + ".csv"
 
-        if self.gpu_available > 0:
+        if self.gpus_available > 0:
             data_generator = self.read_csv_gpu()
-            self._normalize_dataset(data_generator, method, 'GPU')
+            self._normalize_dataset(data_generator=data_generator,
+                                    ignore_features=('No', 'Target'),
+                                    method=method,
+                                    proc='GPU')
         else:
             data_generator = self.read_csv_cpu()
-            self._normalize_dataset(data_generator, method, 'CPU')
+            self._normalize_dataset(data_generator=data_generator,
+                                    ignore_features=('No', 'Target'),
+                                    method=method,
+                                    proc='CPU')
 
     def _write_chunk(self, chunk, header, mode):
 
@@ -32,7 +38,7 @@ class CsvNormalizer(CsvReader):
             chunk.to_csv(outfile, header=header, index=False, columns=self.columns)
 
     # Normalize Entire Dataset in Batches using L2 Normalization (CPU or GPU)
-    def _normalize_dataset(self, data_generator, method, proc):
+    def _normalize_dataset(self, data_generator, ignore_features, method, proc):
 
         i = 0
         s = time.time()
@@ -42,7 +48,7 @@ class CsvNormalizer(CsvReader):
             mode = ('w' if i == 0 else 'a')
 
             for col in chunk:
-                if col not in ('No', 'Target'):
+                if col not in ignore_features:
 
                     chunk[col] = self.normalize(chunk[col], method)
 

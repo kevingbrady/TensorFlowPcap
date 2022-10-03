@@ -52,7 +52,7 @@ class DataManager:
 
             print("No normalized data file found, creating new file ...")
 
-            csv_normalizer.create_normalized_csvfile(method)
+            csv_normalizer.create_normalized_csvfile(ignore_features=('No', 'Target'), method=method)
 
             data_file.seek(0)
             data_file_hashes[method] = hashlib.md5(open(file, 'rb').read()).hexdigest()

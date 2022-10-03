@@ -57,13 +57,13 @@ if __name__ == '__main__':
     # Build Model Layers
     x = Sequential([
         BatchNormalization(),
-        Dense(manager.num_features, activation='relu'), #, kernel_initializer='he_uniform'),
+        Dense(manager.num_features, activation='relu'), kernel_initializer='he_uniform'),
         BatchNormalization(),
         Dropout(0.2),
-        Dense(manager.num_features * 2, activation='relu'), # kernel_initializer='he_uniform'),
+        Dense(manager.num_features * 2, activation='relu') kernel_initializer='he_uniform'),
         BatchNormalization(),
         Dropout(0.4),
-        Dense(manager.num_features, activation='relu'), #, kernel_initializer='he_uniform'),
+        Dense(manager.num_features, activation='relu'), kernel_initializer='he_uniform'),
         BatchNormalization(),
         Dropout(0.2),
         Dense(1, activation='sigmoid')  # Output

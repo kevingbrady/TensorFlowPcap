@@ -1,3 +1,9 @@
+import numpy as np
+
+
+def get_class_probabilities(data, model):
+    return np.array(list(zip(1-model.predict(data), model.predict(data))))
+
 
 def print_run_time(elapsed_time):
     hours, rem = divmod(elapsed_time, 3600)

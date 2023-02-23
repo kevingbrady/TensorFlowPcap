@@ -5,7 +5,7 @@ import keras
 from keras.models import Sequential
 from keras.layers import BatchNormalization, Dense, Input, Dropout
 from src.DataManager import DataManager
-from src.utils import print_run_time
+from src.utils import print_run_time, get_class_probabilities
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 

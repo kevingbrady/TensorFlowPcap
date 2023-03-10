@@ -59,16 +59,3 @@ class CsvReader:
 
             except RuntimeError:
                 break
-
-
-if __name__ == '__main__':
-
-    print(GPUs)
-'''
-    csv_file = CsvReader('../preprocessedData.csv')
-    data_generator = csv_file.read_file()
-
-    for chunk in data_generator:
-        print(chunk['No'].values[-5:])
-        print('\n\n')
-'''

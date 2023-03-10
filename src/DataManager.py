@@ -1,21 +1,23 @@
 import os
 import json
 import hashlib
-from .metadata.data_columns import columns, columns_normalized
-from .CsvNormalizer import CsvNormalizer
+import tensorflow as tf
+from src.metadata.data_columns import columns, columns_normalized
+from src.CsvNormalizer import CsvNormalizer
 
 
 class DataManager:
-
     file = ''
     dataset_size = 0
-    num_features = len(columns)
+    num_features = len(columns) - 1
     feature_names = list(columns.keys())
-    features = {'data': columns, 'normalized': columns_normalized}
+    features = {'data': columns,
+                'normalized': columns_normalized}
     jit_compile = False
     split_size = 0
     remainder = 0
     batch_size = 0
+    normalization_method = 'zscore'
 
     def __init__(self, file, batch_size):
 
@@ -27,6 +29,9 @@ class DataManager:
         # Use Batch Size to Determine the Size of Each Batch of Data,
         # with the last batch consisting of the remainder of data
         self.split_size, self.remainder = divmod(self.dataset_size, self.batch_size)
+
+        print('Dataset Size: ', self.dataset_size)
+        print('Num Features: ', self.num_features - 1)         # Subtract 1 feature for Target column
 
     # Normalize Dataset using defined method (l2 or zscore). If the Normalized Data file already exists and has not been
     # updated return the file without performing any unnecessary work
@@ -73,5 +78,26 @@ class DataManager:
 
         return train_ds, val_ds, test_ds
 
+    # Create Tensorflow Dataset based on arguments that are conditional to which model is being used for training
+    def load_dataset(self, csvfile, model_name):
+        args = {
+            'file_pattern': csvfile,
+            'batch_size': self.split_size,
+            'column_names': self.feature_names,
+            'column_defaults': self.features['data'].values(),
+            'label_name': self.feature_names[-1],
+            'shuffle': False,
+            'num_parallel_reads': os.cpu_count(),
+            'num_epochs': 1
+        }
 
-
+        if model_name in ('DeepNeuralNet', 'LogisticRegression'):
+            normalized_csvfile = self.get_normalized_data_file(self.normalization_method)
+            args.update({
+                'file_pattern': normalized_csvfile,
+                'column_defaults': self.features['normalized'].values(),
+                'sloppy': True,
+                'shuffle': True
+            })
+            
+        return tf.data.experimental.make_csv_dataset(**args)

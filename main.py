@@ -17,10 +17,10 @@ if __name__ == '__main__':
 
     manager = DataManager(csv_file, batch_size)
 
-    class_obj = NeuralNet(manager)
+    #class_obj = NeuralNet(manager)
     #class_obj = LogisticRegression(manager)
     #class_obj = BoostedTrees(manager)
-    #class_obj = RandomForest(manager)
+    class_obj = RandomForest(manager)
 
     model = class_obj()
 

@@ -1,14 +1,14 @@
 import tensorflow_decision_forests as tfdf
 
 features=[
-    tfdf.keras.FeatureUsage('src_ip', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('dst_ip' , tfdf.keras.FeatureSemantic.NUMERICAL),
+    #tfdf.keras.FeatureUsage('src_ip', tfdf.keras.FeatureSemantic.NUMERICAL),
+    #tfdf.keras.FeatureUsage('dst_ip' , tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('src_port' , tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('dst_port' , tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('protocol' , tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('pkt_length' , tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('info' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('timestamp' , tfdf.keras.FeatureSemantic.NUMERICAL),
+    #tfdf.keras.FeatureUsage('timestamp' , tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('flow_duration' , tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('flow_byts_s' , tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('flow_pkts_s' , tfdf.keras.FeatureSemantic.NUMERICAL),
@@ -77,5 +77,6 @@ features=[
     tfdf.keras.FeatureUsage('bwd_byts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('bwd_pkts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
     tfdf.keras.FeatureUsage('fwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
+    tfdf.keras.FeatureUsage('bwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
+    #tfdf.keras.FeatureUsage('Target', tfdf.keras.FeatureSemantic.NUMERICAL)
 ]

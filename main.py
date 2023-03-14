@@ -1,12 +1,12 @@
 import time
 import os
 import tensorflow as tf
-from src.models.neural_net import NeuralNet
-from src.models.logistic_regression import LogisticRegression
-from src.models.boosted_trees import BoostedTrees
-from src.models.random_forest import RandomForest
+from src.models.decision_tree.random_forest.random_forest import RandomForest
+from src.models.decision_tree.boosted_tree.boosted_trees import BoostedTrees
+from src.models.neural_network.logistic_regression.logistic_regression import LogisticRegression
+from src.models.neural_network.deep_neural_network.neural_net import NeuralNet
 from src.DataManager import DataManager
-from src.utils import print_run_time, get_class_probabilities
+from src.utils import print_run_time
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -17,13 +17,12 @@ if __name__ == '__main__':
 
     manager = DataManager(csv_file, batch_size)
 
-    #class_obj = NeuralNet(manager)
+    class_obj = NeuralNet(manager)
     #class_obj = LogisticRegression(manager)
-    class_obj = BoostedTrees()
-    #class_obj = RandomForest()
+    #class_obj = BoostedTrees(manager)
+    #class_obj = RandomForest(manager)
 
     model = class_obj()
-    class_obj.save_model_diagram(model)
 
     # Load dataset using Data Manager's load_dataset function
     dataset = manager.load_dataset(csv_file, class_obj.name)
@@ -48,7 +47,8 @@ if __name__ == '__main__':
 
     train_end = time.time()
 
-    model.summary()
+    class_obj.save_model_diagram(model)
+    #model.summary()
 
     # Evaluate model using test data that has been held out
     test_start = time.time()

@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
@@ -7,6 +8,7 @@ from src.models.neural_network.input_layer import InputLayer
 class LogisticRegression:
 
     name = "LogisticRegression"
+    model_filepath = 'src/models/neural_network/logistic_regression/LogisticRegression'
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     loss = tf.keras.losses.BinaryCrossentropy()
     metrics = ['accuracy', 'Precision', 'Recall']  # 'AUC']
@@ -15,6 +17,10 @@ class LogisticRegression:
     epochs = 20
 
     def __init__(self, manager):
+        
+        if not os.path.exists(self.model_filepath):
+            os.mkdir(self.model_filepath)
+
         input_tensor = self.input_layer(manager)
 
         self.classifier = Sequential([
@@ -33,6 +39,7 @@ class LogisticRegression:
 
     def __call__(self):
         model = tf.keras.Model(
+            name=self.name,
             inputs=self.input_layer.inputs,
             outputs=self.classifier
         )

@@ -47,6 +47,10 @@ if __name__ == '__main__':
 
     train_end = time.time()
 
+    # Save Model to models directory as SavedModel instance
+    model.save(class_obj.model_filepath)
+
+    # Save model png diagram
     class_obj.save_model_diagram(model)
     #model.summary()
 

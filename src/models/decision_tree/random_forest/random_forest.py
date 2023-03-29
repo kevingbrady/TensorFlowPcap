@@ -1,5 +1,4 @@
 import os
-import tensorflow as tf
 import tensorflow_decision_forests as tfdf
 import src.metadata.boosted_tree_features as boosted_tree_features
 import dtreeviz
@@ -7,7 +6,9 @@ import pandas as pd
 
 
 class RandomForest:
+
     name = "RandomForestModel"
+    model_filepath = 'src/models/decision_tree/random_forest/RandomForestModel'
     task = tfdf.keras.Task.CLASSIFICATION
     features = boosted_tree_features.features
     feature_names = []
@@ -19,6 +20,9 @@ class RandomForest:
     tuner = tfdf.tuner.RandomSearch(num_trials=20, trial_num_threads=num_threads)
 
     def __init__(self, manager):
+
+        if not os.path.exists(self.model_filepath):
+            os.mkdir(self.model_filepath)
 
         self.feature_names = manager.feature_names
 
@@ -48,6 +52,7 @@ class RandomForest:
 
     def __call__(self):
         model = tfdf.keras.RandomForestModel(
+            name=self.name,
             task=self.task,
             features=self.features,
             tuner=self.tuner,

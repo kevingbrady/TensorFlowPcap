@@ -4,6 +4,7 @@ import hashlib
 import tensorflow as tf
 from src.metadata.data_columns import columns, columns_normalized
 from src.CsvNormalizer import CsvNormalizer
+from docker_info import DOCKER_PREFIX
 
 
 class DataManager:
@@ -43,7 +44,7 @@ class DataManager:
         if csv_normalizer.gpus_available > 0:
             self.jit_compile = True
 
-        with open("src/metadata/data_file_hashes.json", "r+") as data_file:
+        with open(DOCKER_PREFIX + "src/metadata/data_file_hashes.json", "r+") as data_file:
 
             data_file_hashes = json.load(data_file)
 

@@ -3,12 +3,12 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import BatchNormalization, Dense, Dropout
 from src.models.neural_network.input_layer import InputLayer
-
+from docker_info import DOCKER_PREFIX
 
 class NeuralNet:
 
     name = "DeepNeuralNet"
-    model_filepath = 'src/models/neural_network/deep_neural_network/DeepNeuralNet'
+    model_filepath = DOCKER_PREFIX  + 'src/models/neural_network/deep_neural_network/DeepNeuralNet'
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     loss = tf.keras.losses.BinaryCrossentropy()
     metrics = ['accuracy', 'Precision', 'Recall']  # 'AUC']
@@ -40,7 +40,7 @@ class NeuralNet:
     def save_model_diagram(self, model):
         tf.keras.utils.plot_model(
             model.get_layer('Network'),
-            to_file='src/models/neural_network/deep_neural_network/' + self.name + '.png',  # saving
+            to_file=DOCKER_PREFIX + 'src/models/neural_network/deep_neural_network/' + self.name + '.png',  # saving
             show_layer_activations=True,
             show_shapes=True,
             show_layer_names=True,  # show shapes and layer name

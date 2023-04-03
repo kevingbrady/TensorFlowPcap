@@ -1,5 +1,6 @@
 import time
 import os
+import silence_tensorflow.auto
 import tensorflow as tf
 from src.models.decision_tree.random_forest.random_forest import RandomForest
 from src.models.decision_tree.boosted_tree.boosted_trees import BoostedTrees
@@ -7,20 +8,20 @@ from src.models.neural_network.logistic_regression.logistic_regression import Lo
 from src.models.neural_network.deep_neural_network.neural_net import NeuralNet
 from src.DataManager import DataManager
 from src.utils import print_run_time
+from docker_info import DOCKER_PREFIX
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 if __name__ == '__main__':
 
-    csv_file = 'preprocessedData.csv'
+    csv_file = DOCKER_PREFIX + 'preprocessedData.csv'
     batch_size = 160  # TRAINING + TEST + VALIDATION BATCH SIZE
 
     manager = DataManager(csv_file, batch_size)
 
     #class_obj = NeuralNet(manager)
     #class_obj = LogisticRegression(manager)
-    #class_obj = BoostedTrees(manager)
-    class_obj = RandomForest(manager)
+    class_obj = BoostedTrees(manager)
+    #class_obj = RandomForest(manager)
 
     model = class_obj()
 

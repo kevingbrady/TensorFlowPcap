@@ -1,12 +1,12 @@
 import os
 import tensorflow_decision_forests as tfdf
 import src.metadata.boosted_tree_features as boosted_tree_features
-
+from docker_info import DOCKER_PREFIX
 
 class BoostedTrees:
 
     name = "BoostedTreesModel"
-    model_filepath = 'src/models/decision_tree/boosted_tree/BoostedTreesModel'
+    model_filepath = DOCKER_PREFIX + 'src/models/decision_tree/boosted_tree/BoostedTreesModel'
     task = tfdf.keras.Task.CLASSIFICATION
     num_trees = 20
     features = boosted_tree_features.features
@@ -25,7 +25,7 @@ class BoostedTrees:
 
     def save_model_diagram(self, model):
 
-        with open('src/models/decision_tree/boosted_tree/' + self.name + '.html', 'w+') as f:
+        with open(DOCKER_PREFIX + 'src/models/decision_tree/boosted_tree/' + self.name + '.html', 'w+') as f:
             f.write(tfdf.model_plotter.plot_model(
                                 model,
                                 max_depth=self.num_trees

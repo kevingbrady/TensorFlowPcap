@@ -3,12 +3,13 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
 from src.models.neural_network.input_layer import InputLayer
+from docker_info import DOCKER_PREFIX
 
 
 class LogisticRegression:
 
     name = "LogisticRegression"
-    model_filepath = 'src/models/neural_network/logistic_regression/LogisticRegression'
+    model_filepath = DOCKER_PREFIX + 'src/models/neural_network/logistic_regression/LogisticRegression'
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     loss = tf.keras.losses.BinaryCrossentropy()
     metrics = ['accuracy', 'Precision', 'Recall']  # 'AUC']
@@ -30,7 +31,7 @@ class LogisticRegression:
     def save_model_diagram(self, model):
         tf.keras.utils.plot_model(
             model.get_layer('Network'),
-            to_file='src/models/neural_network/logistic_regression/' + self.name + '.png',  # saving
+            to_file=DOCKER_PREFIX + 'src/models/neural_network/logistic_regression/' + self.name + '.png',  # saving
             show_layer_activations=True,
             show_shapes=True,
             show_layer_names=True,  # show shapes and layer name

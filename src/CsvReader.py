@@ -17,7 +17,7 @@ if cudf is not None:
 
 class CsvReader:
 
-    CHUNKSIZE = 1000000
+    CHUNKSIZE = 100000
 
     def __init__(self, filename):
 

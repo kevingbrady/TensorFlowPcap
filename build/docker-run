@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run --gpus all --cpus "16.0" --memory=100g -v /home/kgb/PycharmProjects/TensorFlowPcap:/app --rm tensorflow-gpu

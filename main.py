@@ -1,5 +1,4 @@
 import time
-import os
 import silence_tensorflow.auto
 import tensorflow as tf
 from src.models.decision_tree.random_forest.random_forest import RandomForest

@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
-from src.models.neural_network.input_layer import InputLayer
+from src.models.neural_network.input_layer import CustomInputLayer
 from docker_info import DOCKER_PREFIX
 
 
@@ -13,8 +13,8 @@ class LogisticRegression:
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     loss = tf.keras.losses.BinaryCrossentropy()
     metrics = ['accuracy', 'Precision', 'Recall']  # 'AUC']
-    jit_compile = False
-    input_layer = InputLayer()
+    jit_compile = True
+    input_layer = CustomInputLayer()
     epochs = 20
 
     def __init__(self, manager):

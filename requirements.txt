@@ -1,0 +1,5 @@
+tensorflow-decision-forests==1.5.0
+pandas
+pydot
+pydotplus
+silence_tensorflow

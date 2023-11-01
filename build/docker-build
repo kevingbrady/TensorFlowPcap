@@ -1,3 +1,4 @@
 #!/bin/bash
 cd ~/PycharmProjects/TensorFlowPcap/build
+docker pull nvcr.io/nvidia/tensorflow:23.09-tf2-py3
 docker build -t tensorflow-gpu ..

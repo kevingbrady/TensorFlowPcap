@@ -1,7 +1,9 @@
 import os
 import tensorflow_decision_forests as tfdf
 import src.metadata.boosted_tree_features as boosted_tree_features
+from src.models.decision_tree.boosted_tree.hyperparameter_tuner import HyperparameterTuner
 from docker_info import DOCKER_PREFIX
+
 
 class BoostedTrees:
 
@@ -15,6 +17,8 @@ class BoostedTrees:
     num_threads = os.cpu_count()
     metrics = ['accuracy', 'Precision', 'Recall']
     epochs = 1
+
+    #tuner = HyperparameterTuner().tuner
 
     def __init__(self, manager):
         
@@ -36,9 +40,9 @@ class BoostedTrees:
         model = tfdf.keras.GradientBoostedTreesModel(
             name=self.name,
             task=self.task,
-            num_trees=self.num_trees,
+            #num_trees=self.num_trees,
             features=self.features,
-            l2_regularization=self.l2_regularization,
+            #tuner=self.tuner,
             num_threads=self.num_threads,
             exclude_non_specified_features=True,
             check_dataset=False

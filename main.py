@@ -19,10 +19,8 @@ if __name__ == '__main__':
 
     #class_obj = NeuralNet(manager)
     #class_obj = LogisticRegression(manager)
-    class_obj = BoostedTrees(manager)
-    #class_obj = RandomForest(manager)
-
-    model = class_obj()
+    #class_obj = BoostedTrees(manager)
+    class_obj = RandomForest(manager)
 
     # Load dataset using Data Manager's load_dataset function
     dataset = manager.load_dataset(csv_file, class_obj.name)
@@ -34,6 +32,8 @@ if __name__ == '__main__':
     train = train.cache().prefetch(tf.data.AUTOTUNE)
     validation = validation.cache().prefetch(tf.data.AUTOTUNE)
     test = test.cache().prefetch(tf.data.AUTOTUNE)
+
+    model = class_obj()
     
 
     # Train model using multiple epochs, with the validation
@@ -42,7 +42,8 @@ if __name__ == '__main__':
     model.fit(
         train,
         epochs=class_obj.epochs,
-        validation_data=validation
+        validation_data=validation,
+        verbose=2
     )
 
     train_end = time.time()

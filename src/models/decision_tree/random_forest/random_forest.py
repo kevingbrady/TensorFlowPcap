@@ -16,7 +16,7 @@ class RandomForest:
     metrics = ['accuracy', 'Precision', 'Recall']
     epochs = 1
 
-    tuner = tfdf.tuner.RandomSearch(num_trials=20, trial_num_threads=num_threads)
+    #tuner = tfdf.tuner.RandomSearch(num_trials=20, trial_num_threads=num_threads)
 
     def __init__(self, manager):
 
@@ -39,7 +39,7 @@ class RandomForest:
             name=self.name,
             task=self.task,
             features=self.features,
-            tuner=self.tuner,
+            #tuner=self.tuner,
             num_threads=self.num_threads,
             num_trees=self.num_trees,
             exclude_non_specified_features=True,

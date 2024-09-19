@@ -1,42 +1,46 @@
 import os
 import tensorflow as tf
-from keras.models import Sequential
-from keras.layers import BatchNormalization, Dense, Dropout, InputLayer
-from src.models.neural_network.input_layer import CustomInputLayer
+from keras.api.models import Sequential
+from keras.api.layers import BatchNormalization, Dense, Dropout, Concatenate, Input
+from src.models.neural_network.input_layer import InputLayer
 from docker_info import DOCKER_PREFIX
 
 
 class NeuralNet:
 
     name = "DeepNeuralNet"
-    model_filepath = DOCKER_PREFIX  + 'src/models/neural_network/deep_neural_network/DeepNeuralNet'
+    model_filepath = DOCKER_PREFIX + 'src/models/neural_network/deep_neural_network/DeepNeuralNet'
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
-    loss = tf.keras.losses.BinaryCrossentropy()
-    metrics = ['accuracy', 'Precision', 'Recall']  # 'AUC']
+    #loss = tf.keras.losses.BinaryCrossentropy()
+    loss = tf.keras.losses.SquaredHinge()
+    metrics = ['accuracy', 'BinaryAccuracy', 'Precision', 'Recall', 'AUC']
     jit_compile = True
-    input_layer = CustomInputLayer()
-    epochs = 20
+    epochs = 30
 
     def __init__(self, manager):
 
         if not os.path.exists(self.model_filepath):
             os.mkdir(self.model_filepath)
 
-        self.input_tensor = self.input_layer(manager)
+        self.input_layer = InputLayer(manager)
+        self.input_tensor = self.input_layer.get_input_tensor()
 
         self.classifier = Sequential([
             BatchNormalization(),
             Dense(self.input_layer.num_features, activation='relu', kernel_initializer='he_uniform'),
-            BatchNormalization(),
-            Dropout(0.2),
+            #BatchNormalization(),
+            #Dropout(0.2),
             Dense(self.input_layer.num_features * 2, activation='relu', kernel_initializer='he_uniform'),
-            BatchNormalization(),
-            Dropout(0.4),
+            # BatchNormalization(),
+            #Dropout(0.4),
             Dense(self.input_layer.num_features, activation='relu', kernel_initializer='he_uniform'),
-            BatchNormalization(),
-            Dropout(0.2),
+            #BatchNormalization(),
+            #Dropout(0.2),
             Dense(1, activation='sigmoid')  # Output
         ], name='Network')(self.input_tensor)
+
+    def save_model(self, model):
+        model.save(self.model_filepath + '.keras')
 
     def save_model_diagram(self, model):
         tf.keras.utils.plot_model(
@@ -63,4 +67,5 @@ class NeuralNet:
             jit_compile=self.jit_compile
         )
 
+        #print(model.summary())
         return model

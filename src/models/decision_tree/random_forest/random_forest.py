@@ -1,22 +1,21 @@
 import os
 import tensorflow_decision_forests as tfdf
-import src.metadata.boosted_tree_features as boosted_tree_features
+from src.metadata.boosted_tree_features import features
+from src.metadata.data_columns import columns
 import pandas as pd
 from docker_info import DOCKER_PREFIX
+
 
 class RandomForest:
 
     name = "RandomForestModel"
-    model_filepath = DOCKER_PREFIX + 'src/models/decision_tree/random_forest/RandomForestModel'
+    model_filepath = DOCKER_PREFIX + '/home/kgb/PycharmProjects/TensorFlowPcap/src/models/decision_tree/random_forest/RandomForestModel'
     task = tfdf.keras.Task.CLASSIFICATION
-    features = boosted_tree_features.features
     feature_names = []
     num_threads = os.cpu_count()
     num_trees = 50
     metrics = ['accuracy', 'Precision', 'Recall']
     epochs = 1
-
-    #tuner = tfdf.tuner.RandomSearch(num_trials=20, trial_num_threads=num_threads)
 
     def __init__(self, manager):
 
@@ -24,6 +23,9 @@ class RandomForest:
             os.mkdir(self.model_filepath)
 
         self.feature_names = manager.feature_names
+
+    def save_model(self, model):
+        model.save(self.model_filepath)
 
     def save_model_diagram(self, model):
 
@@ -35,10 +37,13 @@ class RandomForest:
             )
 
     def __call__(self):
+
+        #tuner = tfdf.tuner.RandomSearch(num_trials=20, trial_num_threads=self.num_threads)
+
         model = tfdf.keras.RandomForestModel(
             name=self.name,
-            task=self.task,
-            features=self.features,
+            task=tfdf.keras.Task.CLASSIFICATION,
+            features=features,
             #tuner=self.tuner,
             num_threads=self.num_threads,
             num_trees=self.num_trees,

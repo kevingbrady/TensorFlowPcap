@@ -27,7 +27,6 @@ class DataManager:
     def __init__(self, file, batch_size):
 
         self.file = file
-
         analyzer = self.get_class_analyzer()
 
         # Get Dataset Size by Opening Csv File and Counting rows
@@ -38,19 +37,22 @@ class DataManager:
         # with the last batch consisting of the remainder of data
         self.split_size, self.remainder = divmod(self.dataset_size, self.batch_size)
 
+        self.training_steps = 0
+        self.validation_steps = 0
+
         analyzer.print_class_analysis_output()
         print('Num Features: ', self.num_features - 1)         # Subtract 1 feature for Target column
 
     def get_class_analyzer(self):
 
-        if self.check_file_hash(self.file) and os.path.exists(DOCKER_PREFIX + "/src/metadata/class_analyzer.pkl"):
-            with open(DOCKER_PREFIX + "/src/metadata/class_analyzer.pkl", 'rb') as h:
+        if self.check_file_hash(self.file) and os.path.exists(DOCKER_PREFIX + "src/metadata/class_analyzer.pkl"):
+            with open(DOCKER_PREFIX + "src/metadata/class_analyzer.pkl", 'rb') as h:
                 analyzer = pickle.load(h)
 
         else:
             analyzer = ClassAnalyzer(self.file)
-            self.write_metaadata_file(self.file)
-            with open(DOCKER_PREFIX + "/src/metadata/class_analyzer.pkl", 'wb') as h:
+            self.write_metadata_file(self.file)
+            with open(DOCKER_PREFIX + "src/metadata/class_analyzer.pkl", 'wb') as h:
                 pickle.dump(analyzer, h)
 
         return analyzer
@@ -71,19 +73,30 @@ class DataManager:
         else:
             print("No normalized data file found, creating new file ...")
             csv_normalizer.create_normalized_csvfile(ignore_features=('No', 'Target'), method=method)
-            self.write_metaadata_file(normalized_file)
+            self.write_metadata_file(normalized_file)
             return normalized_file
 
     # Split Dataset into Train, Test, and Validation Sets. Default Split is 75/12.5/12.5
     def get_dataset_partitions_tf(self, ds, train_split=0.8, val_split=0.1, test_split=0.1):
+
         assert (train_split + test_split + val_split) == 1
 
         train_size = int((train_split * self.dataset_size) / self.split_size)
         val_size = int((val_split * self.dataset_size) / self.split_size)
 
+        self.training_steps = int(train_size / self.split_size)
+        self.validation_steps = int(val_size / self.split_size)
+
         train_ds = ds.take(train_size)
         val_ds = ds.skip(train_size).take(val_size)
         test_ds = ds.skip(train_size).skip(val_size)
+
+        '''
+        print("Batch: ", self.split_size)
+        print("Training : ", train_size * self.split_size)
+        print("Validation: ", val_size * self.split_size)
+        print("Testing: ", int(test_split * self.dataset_size))
+        '''
 
         return train_ds, val_ds, test_ds
 
@@ -95,7 +108,8 @@ class DataManager:
             'column_names': self.feature_names,
             'column_defaults': self.features['data'].values(),
             'label_name': self.feature_names[-1],
-            'shuffle': False,
+            'shuffle': True,
+            'sloppy': True,
             'num_parallel_reads': os.cpu_count(),
             'num_epochs': 1
         }
@@ -105,14 +119,12 @@ class DataManager:
             args.update({
                 'file_pattern': normalized_csvfile,
                 'column_defaults': self.features['normalized'].values(),
-                'sloppy': True,
-                'shuffle': True
             })
-            
+
         return tf.data.experimental.make_csv_dataset(**args)
 
     @staticmethod
-    def write_metaadata_file(file):
+    def write_metadata_file(file):
 
         with open(DOCKER_PREFIX + "src/metadata/data_file_hashes.json", "r+") as data_file:
             file_hash = hashlib.md5(open(file, 'rb').read()).hexdigest()

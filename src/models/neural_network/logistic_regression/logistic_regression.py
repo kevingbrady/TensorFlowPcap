@@ -1,8 +1,8 @@
 import os
 import tensorflow as tf
-from keras.models import Sequential
-from keras.layers import Dense
-from src.models.neural_network.input_layer import CustomInputLayer
+from keras.api.models import Sequential
+from keras.api.layers import Dense, Normalization, Concatenate, BatchNormalization
+from src.models.neural_network.input_layer import InputLayer
 from docker_info import DOCKER_PREFIX
 
 
@@ -14,19 +14,23 @@ class LogisticRegression:
     loss = tf.keras.losses.BinaryCrossentropy()
     metrics = ['accuracy', 'Precision', 'Recall']  # 'AUC']
     jit_compile = True
-    input_layer = CustomInputLayer()
     epochs = 20
 
     def __init__(self, manager):
-        
+
         if not os.path.exists(self.model_filepath):
             os.mkdir(self.model_filepath)
 
-        input_tensor = self.input_layer(manager)
+        self.input_layer = InputLayer(manager)
+        self.input_tensor = self.input_layer.get_input_tensor()
 
         self.classifier = Sequential([
+            BatchNormalization(),
             Dense(1, activation='sigmoid')  # Output
-        ], name='Network')(input_tensor)
+        ], name='Network')(self.input_tensor)
+
+    def save_model(self, model):
+        model.save(self.model_filepath + '.keras')
 
     def save_model_diagram(self, model):
         tf.keras.utils.plot_model(

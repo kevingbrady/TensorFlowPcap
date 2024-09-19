@@ -1,82 +1,90 @@
 import tensorflow_decision_forests as tfdf
 
-features=[
-    #tfdf.keras.FeatureUsage('src_ip', tfdf.keras.FeatureSemantic.NUMERICAL),
-    #tfdf.keras.FeatureUsage('dst_ip' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('src_port' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('dst_port' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('protocol' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('pkt_length' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('info' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    #tfdf.keras.FeatureUsage('timestamp' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('flow_duration' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('flow_byts_s' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('flow_pkts_s' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_pkts_s' , tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_pkts_s', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('tot_fwd_pkts', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('tot_bwd_pkts', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('totlen_fwd_pkts', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('totlen_bwd_pkts', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_pkt_len_max', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_pkt_len_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_pkt_len_mean', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_pkt_len_std', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_pkt_len_max', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_pkt_len_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_pkt_len_mean', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_pkt_len_std', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('pkt_len_max', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('pkt_len_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('pkt_len_mean', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('pkt_len_std', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('pkt_len_var', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_header_len', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_header_len', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_seg_size_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_act_data_pkts', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('flow_iat_mean', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('flow_iat_max', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('flow_iat_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('flow_iat_std', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_iat_tot', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_iat_max', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_iat_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_iat_mean', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_iat_std', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_iat_tot', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_iat_max', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_iat_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_iat_mean', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_iat_std', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_psh_flags', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_psh_flags', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_urg_flags', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_urg_flags', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fin_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('syn_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('rst_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('psh_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('ack_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('urg_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('ece_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('down_up_ratio', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('pkt_size_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('init_fwd_win_byts', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('init_bwd_win_byts', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('active_max', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('active_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('active_mean', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('active_std', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('idle_max', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage( 'idle_min', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('idle_mean', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('idle_std', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_byts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_pkts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_byts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_pkts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('fwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
-    tfdf.keras.FeatureUsage('bwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL),
-    #tfdf.keras.FeatureUsage('Target', tfdf.keras.FeatureSemantic.NUMERICAL)
-]
+src_ip = tfdf.keras.FeatureUsage('src_ip', tfdf.keras.FeatureSemantic.NUMERICAL)
+dst_ip = tfdf.keras.FeatureUsage('dst_ip', tfdf.keras.FeatureSemantic.NUMERICAL)
+src_port = tfdf.keras.FeatureUsage('src_port', tfdf.keras.FeatureSemantic.NUMERICAL)
+dst_port = tfdf.keras.FeatureUsage('dst_port', tfdf.keras.FeatureSemantic.NUMERICAL)
+protocol = tfdf.keras.FeatureUsage('protocol', tfdf.keras.FeatureSemantic.NUMERICAL)
+pkt_length = tfdf.keras.FeatureUsage('pkt_length', tfdf.keras.FeatureSemantic.NUMERICAL)
+info = tfdf.keras.FeatureUsage('info', tfdf.keras.FeatureSemantic.NUMERICAL)
+flow_duration = tfdf.keras.FeatureUsage('flow_duration', tfdf.keras.FeatureSemantic.NUMERICAL)
+flow_byts_s = tfdf.keras.FeatureUsage('flow_byts_s', tfdf.keras.FeatureSemantic.NUMERICAL)
+flow_pkts_s = tfdf.keras.FeatureUsage('flow_pkts_s', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_pkts_s = tfdf.keras.FeatureUsage('fwd_pkts_s', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_pkts_s = tfdf.keras.FeatureUsage('bwd_pkts_s', tfdf.keras.FeatureSemantic.NUMERICAL)
+tot_fwd_pkts = tfdf.keras.FeatureUsage('tot_fwd_pkts', tfdf.keras.FeatureSemantic.NUMERICAL)
+tot_bwd_pkts = tfdf.keras.FeatureUsage('tot_bwd_pkts', tfdf.keras.FeatureSemantic.NUMERICAL)
+totlen_fwd_pkts = tfdf.keras.FeatureUsage('totlen_fwd_pkts', tfdf.keras.FeatureSemantic.NUMERICAL)
+totlen_bwd_pkts = tfdf.keras.FeatureUsage('totlen_bwd_pkts', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_pkt_len_max = tfdf.keras.FeatureUsage('fwd_pkt_len_max', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_pkt_len_min = tfdf.keras.FeatureUsage('fwd_pkt_len_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_pkt_len_mean = tfdf.keras.FeatureUsage('fwd_pkt_len_mean', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_pkt_len_std = tfdf.keras.FeatureUsage('fwd_pkt_len_std', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_pkt_len_max = tfdf.keras.FeatureUsage('bwd_pkt_len_max', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_pkt_len_min = tfdf.keras.FeatureUsage('bwd_pkt_len_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_pkt_len_mean = tfdf.keras.FeatureUsage('bwd_pkt_len_mean', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_pkt_len_std = tfdf.keras.FeatureUsage('bwd_pkt_len_std', tfdf.keras.FeatureSemantic.NUMERICAL)
+pkt_len_max = tfdf.keras.FeatureUsage('pkt_len_max', tfdf.keras.FeatureSemantic.NUMERICAL)
+pkt_len_min = tfdf.keras.FeatureUsage('pkt_len_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+pkt_len_mean = tfdf.keras.FeatureUsage('pkt_len_mean', tfdf.keras.FeatureSemantic.NUMERICAL)
+pkt_len_std = tfdf.keras.FeatureUsage('pkt_len_std', tfdf.keras.FeatureSemantic.NUMERICAL)
+pkt_len_var = tfdf.keras.FeatureUsage('pkt_len_var', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_header_len = tfdf.keras.FeatureUsage('fwd_header_len', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_header_len = tfdf.keras.FeatureUsage('bwd_header_len', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_seg_size_min = tfdf.keras.FeatureUsage('fwd_seg_size_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_act_data_pkts = tfdf.keras.FeatureUsage('fwd_act_data_pkts', tfdf.keras.FeatureSemantic.NUMERICAL)
+flow_iat_mean = tfdf.keras.FeatureUsage('flow_iat_mean', tfdf.keras.FeatureSemantic.NUMERICAL)
+flow_iat_max = tfdf.keras.FeatureUsage('flow_iat_max', tfdf.keras.FeatureSemantic.NUMERICAL)
+flow_iat_min = tfdf.keras.FeatureUsage('flow_iat_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+flow_iat_std = tfdf.keras.FeatureUsage('flow_iat_std', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_iat_tot = tfdf.keras.FeatureUsage('fwd_iat_tot', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_iat_max = tfdf.keras.FeatureUsage('fwd_iat_max', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_iat_min = tfdf.keras.FeatureUsage('fwd_iat_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_iat_mean = tfdf.keras.FeatureUsage('fwd_iat_mean', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_iat_std = tfdf.keras.FeatureUsage('fwd_iat_std', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_iat_tot = tfdf.keras.FeatureUsage('bwd_iat_tot', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_iat_max = tfdf.keras.FeatureUsage('bwd_iat_max', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_iat_min = tfdf.keras.FeatureUsage('bwd_iat_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_iat_mean = tfdf.keras.FeatureUsage('bwd_iat_mean', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_iat_std = tfdf.keras.FeatureUsage('bwd_iat_std', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_psh_flags = tfdf.keras.FeatureUsage('fwd_psh_flags', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_psh_flags = tfdf.keras.FeatureUsage('bwd_psh_flags', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_urg_flags = tfdf.keras.FeatureUsage('fwd_urg_flags', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_urg_flags = tfdf.keras.FeatureUsage('bwd_urg_flags', tfdf.keras.FeatureSemantic.NUMERICAL)
+fin_flag_cnt = tfdf.keras.FeatureUsage('fin_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL)
+syn_flag_cnt = tfdf.keras.FeatureUsage('syn_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL)
+rst_flag_cnt = tfdf.keras.FeatureUsage('rst_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL)
+psh_flag_cnt = tfdf.keras.FeatureUsage('psh_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL)
+ack_flag_cnt = tfdf.keras.FeatureUsage('ack_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL)
+urg_flag_cnt = tfdf.keras.FeatureUsage('urg_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL)
+ece_flag_cnt = tfdf.keras.FeatureUsage('ece_flag_cnt', tfdf.keras.FeatureSemantic.NUMERICAL)
+down_up_ratio = tfdf.keras.FeatureUsage('down_up_ratio', tfdf.keras.FeatureSemantic.NUMERICAL)
+pkt_size_avg = tfdf.keras.FeatureUsage('pkt_size_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
+init_fwd_win_byts = tfdf.keras.FeatureUsage('init_fwd_win_byts', tfdf.keras.FeatureSemantic.NUMERICAL)
+init_bwd_win_byts = tfdf.keras.FeatureUsage('init_bwd_win_byts', tfdf.keras.FeatureSemantic.NUMERICAL)
+active_max = tfdf.keras.FeatureUsage('active_max', tfdf.keras.FeatureSemantic.NUMERICAL)
+active_min = tfdf.keras.FeatureUsage('active_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+active_mean = tfdf.keras.FeatureUsage('active_mean', tfdf.keras.FeatureSemantic.NUMERICAL)
+active_std = tfdf.keras.FeatureUsage('active_std', tfdf.keras.FeatureSemantic.NUMERICAL)
+idle_max = tfdf.keras.FeatureUsage('idle_max', tfdf.keras.FeatureSemantic.NUMERICAL)
+idle_min = tfdf.keras.FeatureUsage('idle_min', tfdf.keras.FeatureSemantic.NUMERICAL)
+idle_mean = tfdf.keras.FeatureUsage('idle_mean', tfdf.keras.FeatureSemantic.NUMERICAL)
+idle_std = tfdf.keras.FeatureUsage('idle_std', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_byts_b_avg = tfdf.keras.FeatureUsage('fwd_byts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_pkts_b_avg = tfdf.keras.FeatureUsage('fwd_pkts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_byts_b_avg = tfdf.keras.FeatureUsage('bwd_byts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_pkts_b_avg = tfdf.keras.FeatureUsage('bwd_pkts_b_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
+fwd_blk_rate_avg = tfdf.keras.FeatureUsage('fwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
+bwd_blk_rate_avg = tfdf.keras.FeatureUsage('bwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
+
+features = [src_ip, dst_ip, src_port, dst_port, protocol, pkt_length, info, flow_duration, flow_byts_s, flow_pkts_s, fwd_pkts_s,
+            bwd_pkts_s, tot_fwd_pkts, tot_bwd_pkts, totlen_fwd_pkts, totlen_bwd_pkts, fwd_pkt_len_max, fwd_pkt_len_min,
+            fwd_pkt_len_mean, fwd_pkt_len_std, bwd_pkt_len_max, bwd_pkt_len_min, bwd_pkt_len_mean, bwd_pkt_len_std,
+            pkt_len_max, pkt_len_min, pkt_len_mean, pkt_len_std, pkt_len_var, fwd_header_len, bwd_header_len,
+            fwd_seg_size_min, fwd_act_data_pkts, flow_iat_mean, flow_iat_max, flow_iat_min, flow_iat_std, fwd_iat_tot,
+            fwd_iat_max, fwd_iat_min, fwd_iat_mean, fwd_iat_std, bwd_iat_tot, bwd_iat_max, bwd_iat_min, bwd_iat_mean,
+            bwd_iat_std, fwd_psh_flags, bwd_psh_flags, fwd_urg_flags, bwd_urg_flags, fin_flag_cnt, syn_flag_cnt,
+            rst_flag_cnt, psh_flag_cnt, ack_flag_cnt, urg_flag_cnt, ece_flag_cnt, down_up_ratio, pkt_size_avg,
+            init_fwd_win_byts, init_bwd_win_byts, active_max, active_min, active_mean, active_std, idle_max, idle_min,
+            idle_mean, idle_std, fwd_byts_b_avg, fwd_pkts_b_avg, bwd_byts_b_avg, bwd_pkts_b_avg, fwd_blk_rate_avg,
+            bwd_blk_rate_avg]

@@ -1,4 +1,7 @@
-tensorflow-decision-forests==1.5.0
+#tensorflow-decision-forests==1.5.0
+tensorflow-decision-forests
+tensorflow
+keras
 pandas
 pydot
 pydotplus

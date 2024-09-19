@@ -6,6 +6,7 @@ def print_run_time(elapsed_time):
     return "{:0>2} hrs {:0>2} min {:05.2f} s".format(int(hours), int(minutes), int(seconds))
 
 
-def print_results(key, value):
+def print_results(results_dict):
+
     print("\n")
-    print(key + ': ' + str(value))
+    print({print(key + ': ' + str(value) for key, value in results_dict.items())})

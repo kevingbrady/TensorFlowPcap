@@ -67,7 +67,7 @@ if __name__ == '__main__':
     test_end = time.time()
 
     print("Test Dataset")
-    print({print_results(x, y) for x, y in results.items()})
+    print(print_results(results))
     print("Training Run Time: " + print_run_time(train_end - train_start))
     print("Evaluation Run Time: " + print_run_time(test_end - test_start))
     print("Total Run Time: " + print_run_time(test_end - train_start))

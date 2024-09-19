@@ -1,2 +1,2 @@
 
-DOCKER_PREFIX = "app/"
+DOCKER_PREFIX = ""

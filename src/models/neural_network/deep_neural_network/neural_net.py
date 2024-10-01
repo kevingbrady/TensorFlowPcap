@@ -1,4 +1,6 @@
 import os
+
+import keras.src.callbacks
 import tensorflow as tf
 from keras.api.models import Sequential
 from keras.api.layers import BatchNormalization, Dense, Dropout, Concatenate, Input
@@ -11,9 +13,10 @@ class NeuralNet:
     name = "DeepNeuralNet"
     model_filepath = DOCKER_PREFIX + 'src/models/neural_network/deep_neural_network/DeepNeuralNet'
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
-    #loss = tf.keras.losses.BinaryCrossentropy()
-    loss = tf.keras.losses.SquaredHinge()
-    metrics = ['accuracy', 'BinaryAccuracy', 'Precision', 'Recall', 'AUC']
+    loss = tf.keras.losses.BinaryCrossentropy()
+    #loss = tf.keras.losses.SquaredHinge()
+    #loss = tf.keras.losses.Hinge()
+    metrics = ['accuracy', 'BinaryAccuracy', 'Precision', 'Recall']
     jit_compile = True
     epochs = 30
 
@@ -28,14 +31,14 @@ class NeuralNet:
         self.classifier = Sequential([
             BatchNormalization(),
             Dense(self.input_layer.num_features, activation='relu', kernel_initializer='he_uniform'),
+            Dropout(0.2),
             #BatchNormalization(),
-            #Dropout(0.2),
             Dense(self.input_layer.num_features * 2, activation='relu', kernel_initializer='he_uniform'),
-            # BatchNormalization(),
-            #Dropout(0.4),
-            Dense(self.input_layer.num_features, activation='relu', kernel_initializer='he_uniform'),
+            Dropout(0.4),
             #BatchNormalization(),
-            #Dropout(0.2),
+            Dense(self.input_layer.num_features, activation='relu', kernel_initializer='he_uniform'),
+            Dropout(0.2),
+            #BatchNormalization(),
             Dense(1, activation='sigmoid')  # Output
         ], name='Network')(self.input_tensor)
 

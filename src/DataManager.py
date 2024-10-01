@@ -77,7 +77,7 @@ class DataManager:
             return normalized_file
 
     # Split Dataset into Train, Test, and Validation Sets. Default Split is 75/12.5/12.5
-    def get_dataset_partitions_tf(self, ds, train_split=0.8, val_split=0.1, test_split=0.1):
+    def get_dataset_partitions_tf(self, ds, train_split=0.75, val_split=0.125, test_split=0.125):
 
         assert (train_split + test_split + val_split) == 1
 

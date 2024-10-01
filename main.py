@@ -14,7 +14,7 @@ from docker_info import DOCKER_PREFIX
 if __name__ == '__main__':
 
     csv_file = DOCKER_PREFIX + 'preprocessedData.csv'
-    batch_size = 120  # TRAINING + TEST + VALIDATION BATCH SIZE      (40 (32), 80 (64), 120 (96), 160 (128))
+    batch_size = 160  # TRAINING + TEST + VALIDATION BATCH SIZE      (40 (32), 80 (64), 120 (96), 160 (128))
 
     manager = DataManager(csv_file, batch_size)
 
@@ -35,22 +35,22 @@ if __name__ == '__main__':
     test = test.cache().prefetch(tf.data.AUTOTUNE)
 
     model = class_obj()
-    
 
     # Train model using multiple epochs, with the validation
     # set being evaluated after each epoch to check for overfitting
     train_start = time.time()
+    
+    params = {
+        'x': train, 
+        'epochs': class_obj.epochs, 
+        'validation_data': validation,
+        'verbose': 1
+    }
+    
+    if class_obj.name in ('DeepNeuralNet', 'Logistic Regression'):
+        params['callbacks'] = [keras.callbacks.EarlyStopping(patience=3)]
 
-    model.fit(
-        train,
-        epochs=class_obj.epochs,
-        #steps_per_epoch=manager.training_steps,
-        validation_data=validation,
-        #validation_steps=manager.validation_steps,
-        verbose=0
-    )
-
-
+    model.fit(params)
     train_end = time.time()
 
     # Save Model to models directory as SavedModel instance
@@ -63,11 +63,11 @@ if __name__ == '__main__':
 
     # Evaluate model using test data that has been held out
     test_start = time.time()
-    results = model.evaluate(test, return_dict=True, verbose=0)
+    results = model.evaluate(test, return_dict=True, verbose=1)
     test_end = time.time()
 
     print("Test Dataset")
-    print(print_results(results))
+    print(results)
     print("Training Run Time: " + print_run_time(train_end - train_start))
     print("Evaluation Run Time: " + print_run_time(test_end - test_start))
     print("Total Run Time: " + print_run_time(test_end - train_start))

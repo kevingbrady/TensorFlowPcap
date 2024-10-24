@@ -77,7 +77,7 @@ bwd_pkts_b_avg = tfdf.keras.FeatureUsage('bwd_pkts_b_avg', tfdf.keras.FeatureSem
 fwd_blk_rate_avg = tfdf.keras.FeatureUsage('fwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
 bwd_blk_rate_avg = tfdf.keras.FeatureUsage('bwd_blk_rate_avg', tfdf.keras.FeatureSemantic.NUMERICAL)
 
-features = [src_ip, dst_ip, src_port, dst_port, protocol, pkt_length, info, flow_duration, flow_byts_s, flow_pkts_s, fwd_pkts_s,
+features = [src_port, dst_port, protocol, pkt_length, info, flow_duration, flow_byts_s, flow_pkts_s, fwd_pkts_s,
             bwd_pkts_s, tot_fwd_pkts, tot_bwd_pkts, totlen_fwd_pkts, totlen_bwd_pkts, fwd_pkt_len_max, fwd_pkt_len_min,
             fwd_pkt_len_mean, fwd_pkt_len_std, bwd_pkt_len_max, bwd_pkt_len_min, bwd_pkt_len_mean, bwd_pkt_len_std,
             pkt_len_max, pkt_len_min, pkt_len_mean, pkt_len_std, pkt_len_var, fwd_header_len, bwd_header_len,

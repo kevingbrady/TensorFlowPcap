@@ -1,9 +1,7 @@
 import os
-
-import keras.src.callbacks
 import tensorflow as tf
 from keras.api.models import Sequential
-from keras.api.layers import BatchNormalization, Dense, Dropout, Concatenate, Input
+from keras.api.layers import BatchNormalization, Dense, Dropout, LayerNormalization, UnitNormalization, GaussianDropout
 from src.models.neural_network.input_layer import InputLayer
 from docker_info import DOCKER_PREFIX
 
@@ -17,7 +15,7 @@ class NeuralNet:
     #loss = tf.keras.losses.SquaredHinge()
     #loss = tf.keras.losses.Hinge()
     metrics = ['accuracy', 'BinaryAccuracy', 'Precision', 'Recall']
-    jit_compile = True
+    jit_compile = False
     epochs = 30
 
     def __init__(self, manager):
@@ -30,15 +28,17 @@ class NeuralNet:
 
         self.classifier = Sequential([
             BatchNormalization(),
-            Dense(self.input_layer.num_features, activation='relu', kernel_initializer='he_uniform'),
-            Dropout(0.2),
+            #LayerNormalization(),
+            #UnitNormalization(),
+            Dense(self.input_tensor.shape[1], activation='leaky_relu', kernel_initializer='glorot_uniform'),
             #BatchNormalization(),
-            Dense(self.input_layer.num_features * 2, activation='relu', kernel_initializer='he_uniform'),
-            Dropout(0.4),
+            #Dropout(0.2),
+            Dense(self.input_tensor.shape[1] * 2, activation='leaky_relu', kernel_initializer='glorot_uniform'),
             #BatchNormalization(),
-            Dense(self.input_layer.num_features, activation='relu', kernel_initializer='he_uniform'),
-            Dropout(0.2),
+            #Dropout(0.4),
+            Dense(self.input_tensor.shape[1], activation='leaky_relu', kernel_initializer='glorot_uniform'),
             #BatchNormalization(),
+            #Dropout(0.2),
             Dense(1, activation='sigmoid')  # Output
         ], name='Network')(self.input_tensor)
 

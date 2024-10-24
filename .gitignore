@@ -1,12 +1,10 @@
 .idea/
 *__pycache__*
-preprocessedData.csv
-preprocessedData_normalized_l2.csv
-preprocessedData_normalized_zscore.csv
-#src/models/neural_network/deep_neural_network/DeepNeuralNet
-#src/models/neural_network/logistic_regression/LogisticRegression
-#src/models/decision_tree/boosted_tree/BoostedTreesModel
-#src/models/decision_tree/random_forest/RandomForestModel
+preprocessedData*
+src/models/neural_network/deep_neural_network/DeepNeuralNet
+src/models/neural_network/logistic_regression/LogisticRegression
+src/models/decision_tree/boosted_tree/BoostedTreesModel
+src/models/decision_tree/random_forest/RandomForestModel
 results.txt
 cufile.log
 *.html

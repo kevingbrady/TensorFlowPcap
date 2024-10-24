@@ -3,13 +3,12 @@ import numpy as np
 
 # Types for Non normalized data
 columns = {
-    'No': np.int32,
     'src_ip': np.int64,
     'dst_ip': np.int64,
     'src_port': np.int32,
     'dst_port': np.int32,
     'protocol': np.int32,
-    'pkt_length': np.int32,
+    'pkt_length': np.float64,
     'info': np.float64,
     'timestamp': np.float64,
     'flow_duration': np.float64,
@@ -34,8 +33,8 @@ columns = {
     'pkt_len_mean': np.float64,
     'pkt_len_std': np.float64,
     'pkt_len_var': np.float64,
-    'fwd_header_len': np.int32,
-    'bwd_header_len': np.int32,
+    'fwd_header_len': np.float64,
+    'bwd_header_len': np.float64,
     'fwd_seg_size_min': np.float64,
     'fwd_act_data_pkts': np.float64,
     'flow_iat_mean': np.float64,
@@ -86,7 +85,6 @@ columns = {
 
 # Types for normalized data
 columns_normalized = {
-    "No": np.int32,
     "src_ip": np.float64,
     "dst_ip": np.float64,
     "src_port": np.float64,

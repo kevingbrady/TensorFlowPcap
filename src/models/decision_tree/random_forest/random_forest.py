@@ -13,7 +13,7 @@ class RandomForest:
     task = tfdf.keras.Task.CLASSIFICATION
     feature_names = []
     num_threads = os.cpu_count()
-    num_trees = 50
+    num_trees = 26
     metrics = ['accuracy', 'Precision', 'Recall']
     epochs = 1
 
@@ -30,10 +30,11 @@ class RandomForest:
     def save_model_diagram(self, model):
 
         with open(DOCKER_PREFIX + 'src/models/decision_tree/random_forest/' + self.name + '.html', 'w+') as f:
-            f.write(tfdf.model_plotter.plot_model(
-                model,
-                max_depth=self.num_trees
-            )
+            f.write(
+                tfdf.model_plotter.plot_model(
+                    model,
+                    max_depth=self.num_trees
+                )
             )
 
     def __call__(self):
@@ -44,9 +45,11 @@ class RandomForest:
             name=self.name,
             task=tfdf.keras.Task.CLASSIFICATION,
             features=features,
+            verbose=1,
             #tuner=self.tuner,
             num_threads=self.num_threads,
             num_trees=self.num_trees,
+            pure_serving_model=True,
             exclude_non_specified_features=True,
             check_dataset=False
         )

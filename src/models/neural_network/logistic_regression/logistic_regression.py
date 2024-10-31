@@ -10,7 +10,7 @@ class LogisticRegression:
 
     name = "LogisticRegression"
     model_filepath = DOCKER_PREFIX + 'src/models/neural_network/logistic_regression/LogisticRegression'
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.00125)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     loss = tf.keras.losses.BinaryCrossentropy()
     metrics = ['accuracy', 'BinaryAccuracy', 'Precision', 'Recall']
     jit_compile = False

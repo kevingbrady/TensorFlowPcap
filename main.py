@@ -13,14 +13,14 @@ from docker_info import DOCKER_PREFIX
 
 if __name__ == '__main__':
 
-    csv_file = DOCKER_PREFIX + 'preprocessedData_sorted.csv'
+    csv_file = DOCKER_PREFIX + 'preprocessedData.csv'
     batch_size = 96  # Multiple of 8 (It gets multiplied by 1.25 to account for test and validation batches)
 
-    manager = DataManager(csv_file, batch_size, 0.98, 0.01, 0.01)  #, 0.8, 0.1, 0.1)
+    manager = DataManager(csv_file, batch_size, 0.96, 0.02, 0.02)  #, 0.8, 0.1, 0.1)
 
-    #class_obj = NeuralNet(manager)
+    class_obj = NeuralNet(manager)
     #class_obj = LogisticRegression(manager)
-    class_obj = BoostedTrees(manager)
+    #class_obj = BoostedTrees(manager)
     #class_obj = RandomForest(manager)
 
     # Load dataset using Data Manager's load_dataset function

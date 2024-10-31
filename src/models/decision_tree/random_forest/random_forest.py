@@ -22,7 +22,7 @@ class RandomForest:
         if not os.path.exists(self.model_filepath):
             os.mkdir(self.model_filepath)
 
-        self.feature_names = manager.feature_names
+        self.feature_names = [x for x in manager.features.keys()]
 
     def save_model(self, model):
         model.save(self.model_filepath)

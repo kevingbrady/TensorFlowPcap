@@ -19,7 +19,7 @@ class DataManager:
     split_size = 0
     remainder = 0
     batch_size = 0
-    normalization_method = 'zscore'
+    normalization_method = 'l2'
 
     def __init__(self,
                  file,
@@ -30,12 +30,9 @@ class DataManager:
                  ):
 
         self.file = file
-        self.exclude_features = ['src_ip', 'dst_ip', 'timestamp']
-        self.feature_names = [x for x in columns.keys() if x not in self.exclude_features]
-        self.feature_types = [y for x, y in columns.items() if x in self.feature_names]
-        self.num_features = len(self.feature_names)
-        self.features = {'data': columns,
-                    'normalized': columns_normalized}
+        self.exclude_features = ['src_ip', 'dst_ip']
+        self.features = {x: y for x, y in columns.items() if x not in self.exclude_features}
+        self.num_features = len(self.features)
 
         analyzer = self.get_class_analyzer()
 
@@ -82,14 +79,14 @@ class DataManager:
         csv_normalizer = CsvNormalizer(self.file)
 
         if csv_normalizer.gpus_available > 0:
-            self.jit_compile = True
+            self.jit_compile = False
 
         if self.check_file_hash(normalized_file):
             print(normalized_file + " up to date, continuing ...")
             return normalized_file
         else:
             print("No normalized data file found, creating new file ...")
-            csv_normalizer.create_normalized_csvfile(ignore_features=['src_ip', 'dst_ip', 'timestamp', 'Target'], method=method)
+            csv_normalizer.create_normalized_csvfile(ignore_features=['src_ip', 'dst_ip', 'Target'], method=method)
             self.write_metadata_file(normalized_file)
             return normalized_file
 
@@ -116,28 +113,24 @@ class DataManager:
     # Create Tensorflow Dataset based on arguments that are conditional to which model is being used for training
     def load_dataset(self, csvfile, model_name):
 
-        #print(self.feature_idx)
-        #print(len(self.feature_idx))
-
         args = {
             'file_pattern': csvfile,
             'batch_size': int(self.split_size),
-            'column_defaults': self.feature_types,
-            'label_name': self.feature_names[-1],
+            'select_columns': self.features.keys(),
+            'column_defaults': self.features.values(),
+            'label_name': 'Target',
             'header': True,
             #'shuffle': True,
             #'sloppy': True,
             #'num_parallel_reads': os.cpu_count(),
             'num_epochs': 1,
-            'select_columns': self.feature_names,
         }
-
         '''
         if model_name in ('DeepNeuralNet', 'LogisticRegression'):
             normalized_csvfile = self.get_normalized_data_file(self.normalization_method)
             args.update({
                 'file_pattern': normalized_csvfile,
-                'column_defaults': self.features['normalized'].values(),
+                'column_defaults': [y for x, y in columns_normalized.items() if x not in self.exclude_features],
             })
         '''
         return tf.data.experimental.make_csv_dataset(**args)
